@@ -14,11 +14,11 @@
 
 #define STR_LEN 200
 
-// union semun {
-//     int     val;            /* value for SETVAL */
-//     struct  semid_ds *buf;  /* buffer for IPC_STAT & IPC_SET */
-//     u_short *array;         /* array for GETALL & SETALL */
-// };
+union semun {		/*  */
+  int     val;		/* value for SETVAL */
+  struct  semid_ds *buf;  /* buffer for IPC_STAT & IPC_SET */
+  u_short *array;         /* array for GETALL & SETALL */
+};
 
 int main(int argc, char * argv[])
 {
@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
       // make shared memory segment
       // create semaphore
       // open file with truncate
-      printf("You put in a -c flag\n");
+      printf("Trying to create a new story...\n");
       int sgid;
 
       //make shared memory segment
@@ -64,6 +64,7 @@ int main(int argc, char * argv[])
       if (fd == -1) {
           fd = open("story", O_TRUNC);
       }
+      
       close(fd);
 
     }
@@ -102,6 +103,26 @@ int main(int argc, char * argv[])
     {
       // output the content of the story
       printf("You put in a -v flag\n");
+
+      int fd;
+      fd = open("story", O_RDONLY);
+
+      if (fd == -1)
+	{
+	  printf("file error %d: %s\n", errno, strerror(errno));
+	}
+      else
+	{
+	  char buffer[200];
+
+	  while ( read(fd, &buffer, 200) )
+	    {
+	      printf("%s", buffer);
+	      fflush(stdout);
+	    }
+
+	  close(fd);
+	}
     }
 
   else {
