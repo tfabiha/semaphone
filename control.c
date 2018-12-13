@@ -25,13 +25,12 @@ int main(int argc, char * argv[])
     key_t key;
     key = ftok("makefile", 'a');
 
-  if (argc < 2)
+  if (argc < 2) //no flag given
     {
       printf("No flag detected\n");
-      return 0;
     }
 
-  if (strcmp(argv[1], "-c") == 0)
+  else if (strcmp(argv[1], "-c") == 0)
     {
       // make shared memory segment
       // create semaphore
@@ -43,7 +42,7 @@ int main(int argc, char * argv[])
       sgid = shmget(key, STR_LEN, 0644 | IPC_CREAT);
       //return error if segment already exists
       if (sgid == -1) {
-          printf("segment error %d: %s\n", errno, strerror(errno));
+          printf("shared memory error %d: %s\n", errno, strerror(errno));
       }
 
       //create semaphore
@@ -67,10 +66,9 @@ int main(int argc, char * argv[])
       }
       close(fd);
 
-      return 0;
     }
 
-  if (strcmp(argv[1], "-r") == 0)
+  else if (strcmp(argv[1], "-r") == 0)
     {
       // remove shared memory
       // remove semaphore
@@ -78,11 +76,12 @@ int main(int argc, char * argv[])
       // wait until semaphore is available
       printf("You put in a -r flag\n");
 
+      int sgid;
       //remove shared memory
-      sgid = shmget(key, STR_LEN,);
-      //return error if segment already exists
+      sgid = shmget(key, STR_LEN, 0);
+      //return error if segment does not exist
       if (sgid == -1) {
-          printf("segment error %d: %s\n", errno, strerror(errno));
+          printf("shared memory error %d: %s\n", errno, strerror(errno));
       }
       shmctl(sgid, IPC_RMID, NULL);
       //remove semaphore
@@ -97,13 +96,18 @@ int main(int argc, char * argv[])
 
       //display content of story
 
-      return 0;
     }
 
-  if (strcmp(argv[1], "-v") == 0)
+  else if (strcmp(argv[1], "-v") == 0)
     {
       // output the content of the story
       printf("You put in a -v flag\n");
-      return 0;
     }
+
+  else {
+      printf("invalid flag\n");
+  }
+
+  return 0;
+
 }
