@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
 
     else if (strcmp(argv[1], "-r") == 0)
     {
-        // printf("You put in a -r flag\n");
+        printf("Removing story...\n");
 
         int sgid;
         //remove shared memory
@@ -120,7 +120,6 @@ int main(int argc, char * argv[])
 
             close(fd);
         }
-    }
 
     else if (strcmp(argv[1], "-v") == 0)
     {
