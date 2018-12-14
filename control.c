@@ -63,7 +63,8 @@ int main(int argc, char * argv[])
         //sets value of semaphore
         union semun data;
         data.val = 1;
-        semctl(sfd, 0, SETVAL, data);
+        int s = semctl(sfd, 0, SETVAL, data);
+        printf("sem val: %d\n", semctl(sfd, 0, GETVAL));
 
         //open file with truncate
         int fd;

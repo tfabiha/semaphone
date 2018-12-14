@@ -22,12 +22,14 @@ int main(){
     printf("attempting to access file...\n");
     int sfd;
     sfd = semget(key, 1, 0);
+    printf("sem val: %d\n", semctl(sfd, 0, GETVAL));
     struct sembuf buffer;
     //down the semaphore
     buffer.sem_op = -1;
     buffer.sem_num = 0;
     buffer.sem_flg = SEM_UNDO;
     semop(sfd, &buffer, 1);
+    printf("sem val: %d\n", semctl(sfd, 0, GETVAL));
 
     //get last line of story
     int sgid;
