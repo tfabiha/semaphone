@@ -14,11 +14,11 @@
 
 #define STR_LEN 200
 
-// union semun {		/*  */
-//     int     val;		/* value for SETVAL */
-//     struct  semid_ds *buf;  /* buffer for IPC_STAT & IPC_SET */
-//     u_short *array;         /* array for GETALL & SETALL */
-// };
+union semun {		/*  */
+    int     val;		/* value for SETVAL */
+    struct  semid_ds *buf;  /* buffer for IPC_STAT & IPC_SET */
+    u_short *array;         /* array for GETALL & SETALL */
+};
 
 int main(int argc, char * argv[])
 {
@@ -57,8 +57,9 @@ int main(int argc, char * argv[])
         }
 
         else {
-            printf("new semaphore created\n");
+            printf("new semaphore %d created\n", sfd);
         }
+        printf("sem val: %d\n", semctl(sfd, 0, GETVAL));
 
         //sets value of semaphore
         union semun data;
@@ -68,7 +69,7 @@ int main(int argc, char * argv[])
 
         //open file with truncate
         int fd;
-        fd = open("story", O_CREAT | O_EXCL);
+        fd = open("story", O_CREAT | O_EXCL, 0644);
         if (fd == -1) {
             fd = open("story", O_TRUNC);
         }
@@ -120,6 +121,7 @@ int main(int argc, char * argv[])
 
             close(fd);
         }
+    }
 
     else if (strcmp(argv[1], "-v") == 0)
     {
