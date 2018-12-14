@@ -35,14 +35,17 @@ int main(int argc, char * argv[])
         // make shared memory segment
         // create semaphore
         // open file with truncate
-        printf("Trying to create a new story...\n");
         int sgid;
 
         //make shared memory segment
-        sgid = shmget(key, STR_LEN, 0644 | IPC_CREAT);
+        sgid = shmget(key, STR_LEN, 0644 | IPC_CREAT | IPC_EXCL);
         //return error if segment already exists
         if (sgid == -1) {
             printf("shared memory error %d: %s\n", errno, strerror(errno));
+        }
+
+        else {
+            printf("new shared memory segment created\n");
         }
 
         //create semaphore
@@ -51,6 +54,10 @@ int main(int argc, char * argv[])
 
         if (sfd == -1) {
             printf("semaphore error %d: %s\n", errno, strerror(errno));
+        }
+
+        else {
+            printf("new semaphore created\n");
         }
 
         //sets value of semaphore
@@ -71,11 +78,7 @@ int main(int argc, char * argv[])
 
     else if (strcmp(argv[1], "-r") == 0)
     {
-        // remove shared memory
-        // remove semaphore
-        // display entire story
-        // wait until semaphore is available
-        printf("You put in a -r flag\n");
+        // printf("You put in a -r flag\n");
 
         int sgid;
         //remove shared memory
@@ -105,9 +108,10 @@ int main(int argc, char * argv[])
         }
         else
         {
-            char buffer[200];
+            printf("story content: \n");
+            char buffer[STR_LEN];
 
-            while ( read(fd, &buffer, 200) )
+            while ( read(fd, &buffer, STR_LEN))
             {
                 printf("%s", buffer);
                 fflush(stdout);
@@ -120,7 +124,7 @@ int main(int argc, char * argv[])
     else if (strcmp(argv[1], "-v") == 0)
     {
         // output the content of the story
-        printf("You put in a -v flag\n");
+        // printf("You put in a -v flag\n");
 
         int fd;
         fd = open("story", O_RDONLY);
@@ -131,6 +135,7 @@ int main(int argc, char * argv[])
         }
         else
         {
+            printf("story content:\n");
             char buffer[200];
 
             while ( read(fd, &buffer, 200) )
