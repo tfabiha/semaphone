@@ -47,10 +47,10 @@ int main(int argc, char * argv[])
         else {
             printf("new shared memory segment created\n");
         }
-
+	
         //create semaphore
         int sfd;
-        sfd = semget(key, 1, IPC_CREAT | IPC_EXCL);
+        sfd = semget(key, 1, IPC_CREAT | IPC_EXCL | 0644);
 
         if (sfd == -1) {
             printf("semaphore error %d: %s\n", errno, strerror(errno));
@@ -59,14 +59,27 @@ int main(int argc, char * argv[])
         else {
             printf("new semaphore %d created\n", sfd);
         }
-        printf("sem val: %d\n", semctl(sfd, 0, GETVAL));
+
+	union semun data;
+	int test = semctl(sfd, 0, GETVAL, data);
+	printf("sem val: %d\n", test);
+
+	if (test == -1)
+	  {
+	    printf("sem 1 error %d: %s\n", errno, strerror(errno));
+	  }
 
         //sets value of semaphore
-        union semun data;
         data.val = 1;
+	
         int s = semctl(sfd, 0, SETVAL, data);
-        printf("sem val: %d\n", semctl(sfd, 0, GETVAL));
-
+	printf("sem val: %d\n", s);
+	
+	if (s == -1)
+	  {
+	    printf("sem error %d: %s\n", errno, strerror(errno));
+	  }
+	    
         //open file with truncate
         int fd;
         fd = open("story", O_CREAT | O_EXCL, 0644);
