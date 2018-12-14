@@ -70,22 +70,20 @@ int main(int argc, char * argv[])
 	  }
 
         //sets value of semaphore
-        data.val = 1;
+	union semun mdata;
+        mdata.val = 1;
 	
-        int s = semctl(sfd, 0, SETVAL, data);
-	printf("sem val: %d\n", s);
+        int s = semctl(sfd, 0, SETVAL, mdata);
+	printf("sem val: %d\n", semctl(sfd, 0, GETVAL, mdata));
 	
 	if (s == -1)
 	  {
-	    printf("sem error %d: %s\n", errno, strerror(errno));
+	    printf("sem 2 error %d: %s\n", errno, strerror(errno));
 	  }
 	    
         //open file with truncate
         int fd;
-        fd = open("story", O_CREAT | O_EXCL, 0644);
-        if (fd == -1) {
-            fd = open("story", O_TRUNC);
-        }
+        fd = open("story", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
         close(fd);
 
