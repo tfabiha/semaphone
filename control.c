@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
         else {
             printf("new shared memory segment created\n");
         }
-	
+
         //create semaphore
         int sfd;
         sfd = semget(key, 1, IPC_CREAT | IPC_EXCL | 0644);
@@ -60,27 +60,27 @@ int main(int argc, char * argv[])
             printf("new semaphore %d created\n", sfd);
         }
 
-	union semun data;
-	int test = semctl(sfd, 0, GETVAL, data);
-	printf("sem val: %d\n", test);
-
-	if (test == -1)
-	  {
-	    printf("sem 1 error %d: %s\n", errno, strerror(errno));
-	  }
+        // // union semun data;
+        // int test = semctl(sfd, 0, GETVAL);
+        // printf("sem val: %d\n", test);
+        //
+        // if (test == -1)
+        // {
+        //     printf("sem 1 error %d: %s\n", errno, strerror(errno));
+        // }
 
         //sets value of semaphore
-	union semun mdata;
+        union semun mdata;
         mdata.val = 1;
-	
+
         int s = semctl(sfd, 0, SETVAL, mdata);
-	printf("sem val: %d\n", semctl(sfd, 0, GETVAL, mdata));
-	
-	if (s == -1)
-	  {
-	    printf("sem 2 error %d: %s\n", errno, strerror(errno));
-	  }
-	    
+        // printf("sem val: %d\n", semctl(sfd, 0, GETVAL, mdata));
+
+        if (s == -1)
+        {
+            printf("sem 2 error %d: %s\n", errno, strerror(errno));
+        }
+
         //open file with truncate
         int fd;
         fd = open("story", O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -139,28 +139,36 @@ int main(int argc, char * argv[])
         // output the content of the story
         // printf("You put in a -v flag\n");
 
-        int fd;
-        fd = open("story", O_RDONLY);
-
-        if (fd == -1)
-        {
-            printf("file error %d: %s\n", errno, strerror(errno));
+        int sgid;
+        //remove shared memory
+        sgid = shmget(key, STR_LEN, 0);
+        //return error if segment does not exist
+        if (sgid == -1) {
+            printf("story no longer exists\n");
         }
-        else
-        {
-            printf("story content:\n");
-            char buffer[200];
+        else {
+            int fd;
+            fd = open("story", O_RDONLY);
 
-            while ( read(fd, &buffer, 200) )
+            if (fd == -1)
             {
-                printf("%s", buffer);
-                fflush(stdout);
+                printf("file error %d: %s\n", errno, strerror(errno));
             }
+            else
+            {
+                printf("story content:\n");
+                char buffer[200];
 
-            close(fd);
+                while ( read(fd, &buffer, 200) )
+                {
+                    printf("%s", buffer);
+                    fflush(stdout);
+                }
+
+                close(fd);
+            }
         }
     }
-
     else {
         printf("invalid flag\n");
     }
